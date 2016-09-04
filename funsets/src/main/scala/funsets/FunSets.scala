@@ -22,7 +22,6 @@ object FunSets {
   def singletonSet(elem: Int): Set = new Set {
     override def apply(v: Int): Boolean = v == elem
   }
-  
 
   /**
    * Returns the union of the two given sets,
@@ -93,12 +92,12 @@ object FunSets {
     def iter(acc: Set, a: Int): Set = {
       if (a > bound) acc
       else if (s(a)) {
-        def newAcc = if (acc != null) union(acc, singletonSet(f(a))) else singletonSet(f(a))
+        def newAcc = if (acc != s) union(acc, singletonSet(f(a))) else singletonSet(f(a))
         iter(newAcc, a + 1)
       }
       else iter(acc, a + 1)
     }
-    iter(null, -bound)
+    iter(s, -bound)
   }
   
   /**
