@@ -25,4 +25,20 @@ def until(singleton: List[CodeTree] => Boolean, combine: List[CodeTree] => List[
 val l2 = List(Leaf('e',1), Leaf('t',2), Leaf('x',3))
 until(singleton, combine)(l2)
 
-createCodeTree(string2Chars("xtetxx"))
+val tree1 = createCodeTree(string2Chars("xtetxx"))
+
+
+val tree2 = createCodeTree(string2Chars("xteaa"))
+
+decodedSecret
+
+encodeChar(tree1)('e')
+encodeChar(tree1)('t')
+encodeChar(tree1)('x')
+
+encode(tree1)(string2Chars("xtee"))
+
+val table1 = convert(tree1)
+
+quickEncode(tree1)(string2Chars("xtee"))
+

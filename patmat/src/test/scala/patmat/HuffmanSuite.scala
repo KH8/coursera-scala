@@ -60,8 +60,16 @@ class HuffmanSuite extends FunSuite {
 
 
   test("combine of some leaf list") {
-    val leaflist = List(Leaf('e', 1), Leaf('t', 2), Leaf('x', 4))
-    assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
+    val leafList = List(Leaf('e', 1), Leaf('t', 2), Leaf('x', 4))
+    assert(combine(leafList) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
+  }
+
+  test("decode a very short text") {
+    new TestTrees {
+      val tree = createCodeTree(string2Chars("ettxxxx"))
+      val secret = List(0,0,0,0,0,1,1)
+      assert(decode(tree, secret) === "eetx".toList)
+    }
   }
 
 
