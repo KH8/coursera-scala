@@ -62,7 +62,13 @@ object Anagrams {
     dictionary.groupBy(w => wordOccurrences(w))
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    val valueOpt = dictionaryByOccurrences.get(wordOccurrences(word))
+    valueOpt match {
+      case Some(value) => value
+      case None => Nil
+    }
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -86,7 +92,15 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
+    case List() => List(Nil)
+    case (c, n) :: others =>
+      val tails = combinations(others)
+      tails ::: (for {
+        j <- tails
+        i <- 1 to n
+      } yield (c, i) :: j)
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -98,7 +112,8 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences =
+    x filterNot (y.map(_._1) contains _._1)
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -140,5 +155,22 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    def sum(s: Sentence): Int = s.map(_.length).sum
+
+    val anagrams = getSetOfSentencesByOccurrences(sentenceOccurrences(sentence))
+
+    anagrams.filter((s) => sum(s).equals(sum(sentence)))
+  }
+
+  def getSetOfSentencesByOccurrences(o: Occurrences): List[Sentence] = {
+    if (o.isEmpty) {
+      List(Nil)
+    } else {
+      val combs = combinations(o)
+      for (i <- combs if dictionaryByOccurrences.keySet(i);
+           j <- dictionaryByOccurrences(i);
+           s <- getSetOfSentencesByOccurrences(subtract(o, i))) yield { j :: s }
+    }
+  }
 }
