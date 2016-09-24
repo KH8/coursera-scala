@@ -112,8 +112,11 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences =
-    x filterNot (y.map(_._1) contains _._1)
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    val (p1, p2) = x.partition(a => y.exists(b => a._1 == b._1))
+    val diff = for( (a, b) <- p1.zip(y) if a._2 != b._2) yield (a._1, a._2 - b._2)
+    (p2 ++ diff).sorted
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -156,11 +159,7 @@ object Anagrams {
    *  Note: There is only one anagram of an empty sentence.
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
-    def sum(s: Sentence): Int = s.map(_.length).sum
-
-    val anagrams = getSetOfSentencesByOccurrences(sentenceOccurrences(sentence))
-
-    anagrams.filter((s) => sum(s).equals(sum(sentence)))
+    getSetOfSentencesByOccurrences(sentenceOccurrences(sentence))
   }
 
   def getSetOfSentencesByOccurrences(o: Occurrences): List[Sentence] = {
@@ -170,7 +169,9 @@ object Anagrams {
       val combs = combinations(o)
       for (i <- combs if dictionaryByOccurrences.keySet(i);
            j <- dictionaryByOccurrences(i);
-           s <- getSetOfSentencesByOccurrences(subtract(o, i))) yield { j :: s }
+           s <- getSetOfSentencesByOccurrences(subtract(o, i))) yield {
+        j :: s
+      }
     }
   }
 }
